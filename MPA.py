@@ -3,6 +3,8 @@
 """ Author: Basil Schneider <basil.schneider@cern.ch>
 MPA data class to store MPA specific quantitites. """
 
+from itertools import izip
+
 class MPA(object):
 
     """ MPA data class to store MPA specific qantitities. The data is stored in
@@ -36,6 +38,12 @@ class MPA(object):
         """ Get number of hits per shutter. """
 
         return self._no_hits_shutter
+
+    def get_no_hits(self):
+
+        """ Get number of hits, integrated over all shutters. """
+
+        return [sum(sublist) for sublist in izip(*self.get_no_hits_shutter())]
 
     def check_if_list(self, lst, length_min=-1, length_max=-1):
 
