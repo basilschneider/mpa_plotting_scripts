@@ -124,7 +124,10 @@ class RippleCounter(object):
         no_shutters = len(self._MPAs[0].get_no_hits_shutter())
 
         # Histogram for all pixels and all MPA's
-        map_all = self._create_map(name % 'all')
+        map_merged = self._create_map(name % 'merged')
+
+        # List to store map objects for later plotting
+        maps = []
 
         # Plots for each pixel and each MPA
         for idx_mpa, MPA in enumerate(self._MPAs):
@@ -145,16 +148,52 @@ class RippleCounter(object):
 
                 map_mpa.Fill(geometry.get_x(px), geometry.get_y(px),
                              MPA.get_no_hits()[px])
-                map_all.Fill(geometry.get_x(px), geometry.get_y(px),
+                map_merged.Fill(geometry.get_x(px), geometry.get_y(px),
                              MPA.get_no_hits()[px])
 
+            maps.append(map_mpa)
             self._save_histo(map_mpa,
                              '%s/%s.pdf' % (path, name % (idx_mpa)),
                              draw_option='COLZ')
 
-        self._save_histo(map_all,
-                         '%s/%s.pdf' % (path, name % ('all')),
+        self._save_histo(map_merged,
+                         '%s/%s.pdf' % (path, name % ('merged')),
                          draw_option='COLZ')
+
+        self._plot_map_all(maps, path, name)
+
+    def _plot_map_all(self, maps, path, name):
+
+        """ Plot all maps in one TCanvas. """
+
+        canvas = TCanvas()
+        canvas.Divide(3, 2)
+
+        for idx, map in enumerate(maps):
+            canvas.cd(self._get_mpa_coordinate(idx))
+            map.SetTitle('')
+            map.Draw('COLZ')
+
+        canvas.SaveAs('%s/%s.pdf' % (path, name % ('all')))
+
+    def _get_mpa_coordinate(self, coordinate):
+
+        """ Return physical coordinate of MPA on MaPSA assembly. """
+
+        if coordinate == 0:
+            return 1
+        if coordinate == 1:
+            return 2
+        if coordinate == 2:
+            return 3
+        if coordinate == 3:
+            return 6
+        if coordinate == 4:
+            return 5
+        if coordinate == 5:
+            return 4
+        else:
+            return -1
 
     def _create_map(self, name):
 
