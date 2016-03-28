@@ -5,7 +5,7 @@ Simple plotting script to visualize the output of the MPA Light asynchronous
 readout (ripple counter. """
 
 from os import system
-from ROOT import gROOT, TCanvas, TH1F
+from ROOT import gROOT, TCanvas, TH1F, THStack, gStyle
 from MPA import MPA
 
 NO_MPAS = 6
@@ -72,6 +72,7 @@ if __name__ == '__main__':
 
     # ROOT batch mode
     gROOT.SetBatch(True)
+    gStyle.SetOptStat(0)
 
     # Create 6 MPA objects
     MPAs = []
