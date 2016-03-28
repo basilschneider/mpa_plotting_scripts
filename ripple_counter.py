@@ -5,7 +5,7 @@ Simple plotting script to visualize the output of the MPA Light asynchronous
 readout (ripple counter. """
 
 from os import system
-from ROOT import gROOT, TCanvas, TH1F, THStack, gStyle
+from ROOT import gROOT, TCanvas, TH1F, THStack, gStyle, TLegend
 from MPA import MPA
 
 NO_MPAS = 6
@@ -36,20 +36,21 @@ def plot_ripples_shutter(MPAs, path):
     # Get number of shutters
     no_shutters = len(MPAs[0].get_no_hits_shutter())
 
-    # Create THStack
+    # Create THStack and its TLegend
     stack = THStack(name % ('all', 'all'), name % ('all', 'all'))
+    leg = TLegend(.9, .5, 1., .9)
 
     # Plots for each pixel and each MPA
-    for idx, MPA in enumerate(MPAs):
+    for idx_mpa, MPA in enumerate(MPAs):
 
         # Histogram for all pixels on one MPA
-        h_mpa = TH1F(name % ('all', idx), name % ('all', idx),
+        h_mpa = TH1F(name % ('all', idx_mpa), name % ('all', idx_mpa),
                      no_shutters, .5, no_shutters+.5)
 
         for px in range(0, NO_PXS):
 
             # Histogram for one pixel on one MPA
-            h_mpa_px = TH1F(name % (px, idx), name % (px, idx),
+            h_mpa_px = TH1F(name % (px, idx_mpa), name % (px, idx_mpa),
                              no_shutters, .5, no_shutters+.5)
 
             for shutter in range(0, no_shutters):
@@ -57,17 +58,18 @@ def plot_ripples_shutter(MPAs, path):
                 h_mpa.Fill(shutter+1, MPA.get_no_hits_shutter()[shutter][px])
 
             save_histo(h_mpa_px, x_title, y_title,
-                       '%s/%s.pdf' % (path, name % (px, idx)))
+                       '%s/%s.pdf' % (path, name % (px, idx_mpa)))
 
         save_histo(h_mpa, x_title, y_title,
-                   '%s/%s.pdf' % (path, name % ('all', idx)))
-        h_mpa.SetFillColor(get_fill_color(idx))
+                   '%s/%s.pdf' % (path, name % ('all', idx_mpa)))
+        h_mpa.SetFillColor(get_fill_color(idx_mpa))
         stack.Add(h_mpa)
+        leg.AddEntry(h_mpa, 'MPA%s' % idx_mpa, 'f')
 
     save_histo(stack, x_title, y_title,
-               '%s/%s.pdf' % (path, name % ('all', 'all')))
+               '%s/%s.pdf' % (path, name % ('all', 'all')), leg)
 
-def save_histo(histogram, x_title, y_title, path):
+def save_histo(histogram, x_title, y_title, path, leg=None):
 
     """ Plot and save histogram as PDF. """
 
@@ -75,6 +77,8 @@ def save_histo(histogram, x_title, y_title, path):
     histogram.Draw()
     histogram.GetXaxis().SetTitle(x_title)
     histogram.GetYaxis().SetTitle(y_title)
+    if leg != None:
+        leg.Draw()
     canvas.SaveAs(path)
 
 def get_fill_color(idx):
