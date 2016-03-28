@@ -36,6 +36,9 @@ def plot_ripples_shutter(MPAs, path):
     # Get number of shutters
     no_shutters = len(MPAs[0].get_no_hits_shutter())
 
+    # Create THStack
+    stack = THStack(name % ('all', 'all'), name % ('all', 'all'))
+
     # Plots for each pixel and each MPA
     for idx, MPA in enumerate(MPAs):
 
@@ -48,6 +51,7 @@ def plot_ripples_shutter(MPAs, path):
             # Histogram for one pixel on one MPA
             h_mpa_px = TH1F(name % (px, idx), name % (px, idx),
                              no_shutters, .5, no_shutters+.5)
+
             for shutter in range(0, no_shutters):
                 h_mpa_px.Fill(shutter+1, MPA.get_no_hits_shutter()[shutter][px])
                 h_mpa.Fill(shutter+1, MPA.get_no_hits_shutter()[shutter][px])
@@ -57,6 +61,11 @@ def plot_ripples_shutter(MPAs, path):
 
         save_histo(h_mpa, x_title, y_title,
                    '%s/%s.pdf' % (path, name % ('all', idx)))
+        h_mpa.SetFillColor(get_fill_color(idx))
+        stack.Add(h_mpa)
+
+    save_histo(stack, x_title, y_title,
+               '%s/%s.pdf' % (path, name % ('all', 'all')))
 
 def save_histo(histogram, x_title, y_title, path):
 
@@ -67,6 +76,12 @@ def save_histo(histogram, x_title, y_title, path):
     histogram.GetXaxis().SetTitle(x_title)
     histogram.GetYaxis().SetTitle(y_title)
     canvas.SaveAs(path)
+
+def get_fill_color(idx):
+
+    """ Return a fill color. """
+
+    return idx+2
 
 if __name__ == '__main__':
 
