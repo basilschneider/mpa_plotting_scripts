@@ -85,6 +85,9 @@ class RippleCounter(Plotter):
         # List to store map objects for later plotting
         maps = []
 
+        # Find maximum Z for adjusting Z range later
+        z_max = 0
+
         # Plots for each pixel and each MPA
         for idx_mpa, MPA in enumerate(self._MPAs):
 
@@ -107,6 +110,10 @@ class RippleCounter(Plotter):
                 map_merged.Fill(geometry.get_x(px), geometry.get_y(px),
                              MPA.get_no_hits()[px])
 
+            # For the map showing all MPA's we want the Z range to be the same
+            # Find maximum here
+            z_max = max(z_max, map_mpa.GetMaximum())
+
             maps.append(map_mpa)
             self._save_histo(map_mpa,
                              '%s/%s.pdf' % (path, name % (idx_mpa)),
@@ -116,9 +123,9 @@ class RippleCounter(Plotter):
                          '%s/%s.pdf' % (path, name % ('merged')),
                          draw_option='COLZ')
 
-        self._plot_map_all(maps, path, name)
+        self._plot_map_all(maps, path, name, z_max)
 
-    def _plot_map_all(self, maps, path, name):
+    def _plot_map_all(self, maps, path, name, z_max):
 
         """ Plot all maps in one TCanvas. """
 
@@ -127,6 +134,7 @@ class RippleCounter(Plotter):
 
         for idx, map in enumerate(maps):
             canvas.cd(self._get_mpa_coordinate(idx))
+            map.GetZaxis().SetRangeUser(0., z_max)
             map.SetTitle('')
             map.Draw('COLZ')
 
