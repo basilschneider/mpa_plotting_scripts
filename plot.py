@@ -5,6 +5,7 @@ Get plots from MPA measurements. """
 
 from RippleCounter import RippleCounter
 from BunchCrossing import BunchCrossing
+from HitMap import HitMap
 
 if __name__ == '__main__':
 
@@ -31,3 +32,11 @@ if __name__ == '__main__':
 
     # Plot counts vs. bunch crossing
     bx.plot_cts_bx('%s/plots/counts_per_bx/' % path_logs)
+
+    hm = HitMap()
+
+    # Read in data from raw log file and store it in MPA object
+    hm.read_data_raw('%s/log_%s.log_memory_data' % (path_logs, path_timestamp))
+
+    # Plot hit maps
+    hm.plot_maps('%s/plots/hit_maps/' % path_logs)
