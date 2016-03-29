@@ -42,14 +42,12 @@ class HitMap(Plotter):
         # Plots for each pixel and each MPA
         for idx_mpa, MPA in enumerate(self._MPAs):
 
-            # Define layout of MPA chip
+            # Define layout of MPA chip (this layout is different from the
+            # ripple counter layout, since the data is stored in a different
+            # way (empirical fact))
             geometry = Geometry()
-            if idx_mpa in [0, 1, 2]:
-                geometry.set_geometry([range(32, 48), range(31, 15, -1),
-                                       range(0, 16)])
-            else:
-                geometry.set_geometry([range(15, -1, -1), range(16, 32),
-                                       range(47, 31, -1)])
+            geometry.set_geometry([range(32, 48), range(31, 15, -1),
+                                   range(0, 16)])
 
             # Histogram for all pixels on one MPA
             map_mpa = self._create_map(name % idx_mpa)
