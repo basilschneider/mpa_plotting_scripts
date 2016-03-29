@@ -47,6 +47,16 @@ class MPA(object):
 
         return [sum(sublist) for sublist in izip(*self.get_no_hits_shutter())]
 
+    def get_max(self):
+
+        """ Get highest value in self._no_hits_shutter. """
+
+        max_value = 0
+        for element in self._no_hits_shutter:
+            max_value = max(max_value, max(element))
+
+        return max_value
+
     def check_if_list(self, lst, length_min=-1, length_max=-1):
 
         """ Check if user passed a list and if meets the requirements of

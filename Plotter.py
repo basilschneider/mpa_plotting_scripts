@@ -44,7 +44,7 @@ class Plotter(object):
                                                            in line.split()])
 
     def _save_histo(self, histogram, path, x_title='', y_title='',
-                    leg=None, draw_option=''):
+                    leg=None, draw_option='', logy=False):
 
         """ Plot and save histogram as PDF. """
 
@@ -52,6 +52,8 @@ class Plotter(object):
         histogram.Draw(draw_option)
         histogram.GetXaxis().SetTitle(x_title)
         histogram.GetYaxis().SetTitle(y_title)
+        if logy:
+            canvas.SetLogy()
         if leg != None:
             leg.Draw()
         canvas.SaveAs(path)
