@@ -54,15 +54,16 @@ class HitMap(Plotter):
             # Histogram for all pixels on one MPA
             map_mpa = self._create_map(name % idx_mpa)
 
-            for i_hit_map in MPA.get_no_hits():
+            for i_hit_maps in MPA.get_no_hits_shutter():
+                for i_hit_map in i_hit_maps:
 
-                s_hit_map = str(i_hit_map).zfill(self._no_pxs_x*self._no_pxs_y)
+                    s_hit_map = str(i_hit_map).zfill(self._no_pxs_x*self._no_pxs_y)
 
-                for px, px_hits in enumerate(s_hit_map):
-                    map_mpa.Fill(geometry.get_x(px), geometry.get_y(px),
-                                 float(px_hits))
-                    map_merged.Fill(geometry.get_x(px), geometry.get_y(px),
-                                    float(px_hits))
+                    for px, px_hits in enumerate(s_hit_map):
+                        map_mpa.Fill(geometry.get_x(px), geometry.get_y(px),
+                                     float(px_hits))
+                        map_merged.Fill(geometry.get_x(px), geometry.get_y(px),
+                                        float(px_hits))
 
             # For the map showing all MPA's we want the Z range to be the same
             # Find maximum here
