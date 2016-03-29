@@ -28,3 +28,6 @@ if __name__ == '__main__':
 
     # Read in data from raw log file and store it in MPA object
     bx.read_data_raw('%s/log_%s.log_memory_bx' % (path_logs, path_timestamp))
+
+    # Plot counts vs. bunch crossing
+    #bx.plot_cts_bx('%s/plots/counts_per_bx/' % path_logs)
