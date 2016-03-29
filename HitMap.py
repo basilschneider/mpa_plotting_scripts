@@ -90,7 +90,11 @@ class HitMap(Plotter):
             canvas.cd(self._get_mpa_coordinate(idx))
             map.GetZaxis().SetRangeUser(0., z_max)
             map.SetTitle('')
-            map.Draw('COLZ')
+            if idx in [2, 3]:
+                drawing_option = 'COLZ'
+            else:
+                drawing_option = 'COL'
+            map.Draw(drawing_option)
 
         canvas.SaveAs('%s/%s.pdf' % (path, name % ('all')))
 
