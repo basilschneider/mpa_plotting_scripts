@@ -16,12 +16,14 @@ class MPA(object):
                               ...
     """
 
-    def __init__(self, no_pxs):
+    def __init__(self, no_elements):
 
         """ Initialize instances. """
 
-        # Number of pixels
-        self.no_pxs = no_pxs
+        # Number of elements in lists
+        # This corresponds to number of pixels for asynchronous readout and
+        # number of words for synchronous readout
+        self.no_elements = no_elements
 
         # Number of hits per shutter
         self._no_hits_shutter = []
@@ -30,7 +32,7 @@ class MPA(object):
 
         """ Set number of hits per shutter. """
 
-        self.check_if_list(no_hits, self.no_pxs, self.no_pxs)
+        self.check_if_list(no_hits, self.no_elements, self.no_elements)
         self._no_hits_shutter.append(no_hits)
 
     def get_no_hits_shutter(self):

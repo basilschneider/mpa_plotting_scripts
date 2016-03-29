@@ -4,6 +4,7 @@
 Get plots from MPA measurements. """
 
 from RippleCounter import RippleCounter
+from BunchCrossing import BunchCrossing
 
 if __name__ == '__main__':
 
@@ -22,3 +23,8 @@ if __name__ == '__main__':
 
     # Plot 2d maps
     rc.plot_maps('%s/plots/ripples_maps/' % path_logs)
+
+    bx = BunchCrossing()
+
+    # Read in data from raw log file and store it in MPA object
+    bx.read_data_raw('%s/log_%s.log_memory_bx' % (path_logs, path_timestamp))
