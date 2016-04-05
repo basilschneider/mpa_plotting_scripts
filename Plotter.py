@@ -44,7 +44,7 @@ class Plotter(object):
                                                            in line.split()])
 
     def _save_histo(self, histogram, path, x_title='', y_title='',
-                    leg=None, draw_option='', logy=False):
+                    leg=None, draw_option='', logy=False, max=None):
 
         """ Plot and save histogram as PDF. """
 
@@ -52,6 +52,8 @@ class Plotter(object):
         histogram.Draw(draw_option)
         histogram.GetXaxis().SetTitle(x_title)
         histogram.GetYaxis().SetTitle(y_title)
+        if not max == None:
+            histogram.SetMaximum(max)
         if logy:
             canvas.SetLogy()
         if leg != None:
