@@ -48,7 +48,8 @@ class BunchCrossing(Plotter):
 
             for shutter in range(0, no_shutters):
                 for mem in range(0, self._no_mems):
-                    h_mpa.Fill(MPA.get_no_hits_shutter()[shutter][mem])
+                    if MPA.get_no_hits_shutter()[shutter][mem] != 0:
+                        h_mpa.Fill(MPA.get_no_hits_shutter()[shutter][mem])
 
             self._save_histo(h_mpa, '%s/%s.pdf' % (path, name % (idx_mpa)),
                              x_title, y_title, max=20, draw_option='nostack')
