@@ -44,7 +44,7 @@ class BunchCrossing(Plotter):
         for idx_mpa, MPA in enumerate(self._MPAs):
 
             # Histogram for one MPA
-            h_mpa = TH1F(name % (idx_mpa), name % (idx_mpa), 50, 0, max_bx)
+            h_mpa = TH1F(name % (idx_mpa), name % (idx_mpa), 100, 0, 100)
 
             for shutter in range(0, no_shutters):
                 for mem in range(0, self._no_mems):
