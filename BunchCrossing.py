@@ -52,11 +52,11 @@ class BunchCrossing(Plotter):
                         h_mpa.Fill(MPA.get_no_hits_shutter()[shutter][mem])
 
             self._save_histo(h_mpa, '%s/%s.pdf' % (path, name % (idx_mpa)),
-                             x_title, y_title, max=20, draw_option='nostack')
+                             x_title, y_title, logy=True)
 
             h_mpa.SetLineColor(self._get_fill_color(idx_mpa))
             stack.Add(h_mpa)
             leg.AddEntry(h_mpa, 'MPA%s' % idx_mpa, 'l')
 
         self._save_histo(stack, '%s/%s.pdf' % (path, name % ('all')),
-                         x_title, y_title, leg, max=20, draw_option='nostack')
+                         x_title, y_title, leg, logy=True, draw_option='nostack')
