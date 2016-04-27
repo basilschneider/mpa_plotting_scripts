@@ -140,6 +140,9 @@ class RippleCounter(Plotter):
                 drawing_option = 'COLZ'
             else:
                 drawing_option = 'COL'
+            # Draw also text
+            drawing_option += '|TEXT90'
+            map.SetMarkerSize(1.7)
             map.Draw(drawing_option)
 
         canvas.SaveAs('%s/%s.pdf' % (path, name % ('all')))
