@@ -8,8 +8,7 @@ from MPA import MPA
 
 class Plotter(object):
 
-    """ Simple plotting class to visualize the output of the MPA Light
-    asynchronous readout (ripple counter). """
+    """ Simple plotting class to visualize the output of the MPA Light. """
 
     # Global settings
     _no_mpas = 6
