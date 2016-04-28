@@ -7,6 +7,7 @@ from sys import argv
 from RippleCounter import RippleCounter
 from BunchCrossing import BunchCrossing
 from HitMap import HitMap
+from SynchronousData import SynchronousData
 
 if __name__ == '__main__':
 
@@ -40,4 +41,9 @@ if __name__ == '__main__':
     hm.read_data_raw('%s/log_%s.log_memory_data' % (path_logs, path_timestamp))
 
     # Plot hit maps
-    hm.plot_maps('%s/plots/hit_maps/' % path_logs)
+    #hm.plot_maps('%s/plots/hit_maps/' % path_logs)
+
+    sd = SynchronousData(bx, hm)
+
+    # Plot counts vs. bunch crossing separate for each pixel
+    sd.plot_cts_bx_px('%s/plots/counts_per_px_bx' % path_logs)

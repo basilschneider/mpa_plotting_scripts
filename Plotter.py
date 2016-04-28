@@ -30,6 +30,12 @@ class Plotter(object):
         for i in range(0, self._no_mpas):
             self._MPAs.append(MPA(size))
 
+    def get_mpas(self):
+
+        """ Return list of MPA objects. """
+
+        return self._MPAs
+
     def read_data_raw(self, logfile):
 
         """ Read in raw logfile and fill MPA objects. """
@@ -43,7 +49,7 @@ class Plotter(object):
                                                            in line.split()])
 
     def _save_histo(self, histogram, path, x_title='', y_title='',
-                    leg=None, draw_option='', logy=False, max=None):
+                    leg=None, draw_option='', logy=False, max=None, min=None):
 
         """ Plot and save histogram as PDF. """
 
@@ -51,6 +57,8 @@ class Plotter(object):
         histogram.Draw(draw_option)
         histogram.GetXaxis().SetTitle(x_title)
         histogram.GetYaxis().SetTitle(y_title)
+        if not min == None:
+            histogram.SetMinimum(min)
         if not max == None:
             histogram.SetMaximum(max)
         if logy:
