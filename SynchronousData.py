@@ -123,96 +123,96 @@ class SynchronousData(Plotter):
         if px == 0:
             return kRed-7
         if px == 1:
-            return kRed-3
-        if px == 2:
-            return kRed+2
-        if px == 3:
-            return kRed+3
-        if px == 4:
             return kPink-7
-        if px == 5:
-            return kPink-3
-        if px == 6:
-            return kPink+2
-        if px == 7:
-            return kPink+3
-        if px == 8:
+        if px == 2:
             return kMagenta-7
-        if px == 9:
-            return kMagenta-3
-        if px == 10:
-            return kMagenta+2
-        if px == 11:
-            return kMagenta+3
-        if px == 12:
+        if px == 3:
             return kViolet-7
-        if px == 13:
-            return kViolet-3
-        if px == 14:
-            return kViolet+2
-        if px == 15:
-            return kViolet+3
-        if px == 16:
+        if px == 4:
             return kBlue-7
-        if px == 17:
-            return kBlue-3
-        if px == 18:
-            return kBlue+2
-        if px == 19:
-            return kBlue+3
-        if px == 20:
+        if px == 5:
             return kAzure-7
-        if px == 21:
-            return kAzure-3
-        if px == 22:
-            return kAzure+2
-        if px == 23:
-            return kAzure+3
-        if px == 24:
+        if px == 6:
             return kCyan-7
-        if px == 25:
-            return kCyan-3
-        if px == 26:
-            return kCyan+2
-        if px == 27:
-            return kCyan+3
-        if px == 28:
+        if px == 7:
             return kTeal-7
-        if px == 29:
-            return kTeal-3
-        if px == 30:
-            return kTeal+2
-        if px == 31:
-            return kTeal+3
-        if px == 32:
+        if px == 8:
             return kGreen-7
-        if px == 33:
-            return kGreen-3
-        if px == 34:
-            return kGreen+2
-        if px == 35:
-            return kGreen+3
-        if px == 36:
+        if px == 9:
             return kSpring-7
-        if px == 37:
-            return kSpring-3
-        if px == 38:
-            return kSpring+2
-        if px == 39:
-            return kSpring+3
-        if px == 40:
+        if px == 10:
             return kYellow-7
-        if px == 41:
-            return kYellow-3
-        if px == 42:
-            return kYellow+2
-        if px == 43:
-            return kYellow+3
-        if px == 44:
+        if px == 11:
             return kOrange-7
-        if px == 45:
+        if px == 12:
+            return kRed-3
+        if px == 13:
+            return kPink-3
+        if px == 14:
+            return kMagenta-3
+        if px == 15:
+            return kViolet-3
+        if px == 16:
+            return kBlue-3
+        if px == 17:
+            return kAzure-3
+        if px == 18:
+            return kCyan-3
+        if px == 19:
+            return kTeal-3
+        if px == 20:
+            return kGreen-3
+        if px == 21:
+            return kSpring-3
+        if px == 22:
+            return kYellow-3
+        if px == 23:
             return kOrange-3
-        if px == 46:
+        if px == 24:
+            return kRed+2
+        if px == 25:
+            return kPink+2
+        if px == 26:
+            return kMagenta+2
+        if px == 27:
+            return kViolet+2
+        if px == 28:
+            return kBlue+2
+        if px == 29:
+            return kAzure+2
+        if px == 30:
+            return kCyan+2
+        if px == 31:
+            return kTeal+2
+        if px == 32:
+            return kGreen+2
+        if px == 33:
+            return kSpring+2
+        if px == 34:
+            return kYellow+2
+        if px == 35:
             return kOrange+2
+        if px == 36:
+            return kRed+3
+        if px == 37:
+            return kPink+3
+        if px == 38:
+            return kMagenta+3
+        if px == 39:
+            return kViolet+3
+        if px == 40:
+            return kBlue+3
+        if px == 41:
+            return kAzure+3
+        if px == 42:
+            return kCyan+3
+        if px == 43:
+            return kTeal+3
+        if px == 44:
+            return kGreen+3
+        if px == 45:
+            return kSpring+3
+        if px == 46:
+            return kYellow+3
         if px == 47:
             return kOrange+3
