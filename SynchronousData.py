@@ -99,6 +99,8 @@ class SynchronousData(Plotter):
 
         """ Convert hit map to list of pixels with hits. """
 
+        # TODO: Merge with same method in MPA class
+
         MPA_ph = []
         # Reverse loop through hit map digit by digit
         for idx, px in enumerate(str(MPA_hm)[::-1]):
@@ -111,6 +113,8 @@ class SynchronousData(Plotter):
 
         """ Get coordinate of pixel, since geometries of hit map and
         calibration differ. """
+
+        # TODO: Merge with same method in MPA class
 
         if px in range(16, 32):
             return px

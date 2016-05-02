@@ -41,6 +41,45 @@ class MPA(object):
 
         return self._no_hits_shutter
 
+    def trim_no_hits_shutter(self):
+
+        """ Remove all 0's in hits per shutter data. """
+
+        # Get rid of all 0's in the sublists
+        self._no_hits_shutter = [[val for val in sublist if val != 0]
+                                 for sublist in self.get_no_hits_shutter()]
+        # Get rid of all empty sublists
+        self._no_hits_shutter = [sublist for sublist
+                                 in self.get_no_hits_shutter()
+                                 if len(sublist) > 0]
+
+    def convert_hm_to_px(self):
+
+        """ Convert hit maps to list of pixels with hits. """
+
+        MPA_ph = []
+        for hit_map_list in self._no_hits_shutter:
+            MPA_ph_shutter = []
+            for hit_map in hit_map_list:
+                MPA_ph_shutter_bx = []
+                # Reverse loop through hit map digit by digit
+                for idx, px in enumerate(str(hit_map)[::-1]):
+                    if px == '1':
+                        MPA_ph_shutter_bx.append(self._get_coordinate(idx))
+                MPA_ph_shutter.append(MPA_ph_shutter_bx)
+            MPA_ph.append(MPA_ph_shutter)
+
+        self._no_hits_shutter = MPA_ph
+
+    def _get_coordinate(self, px):
+
+        """ Get coordinate of pixel, since geometries of hit map and
+        calibration differ. """
+
+        if px in range(16, 32):
+            return px
+        return (47 - px)
+
     def get_no_hits(self):
 
         """ Get number of hits, integrated over all shutters. """
