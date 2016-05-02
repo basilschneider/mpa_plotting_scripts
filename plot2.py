@@ -5,7 +5,7 @@ Get plots from MPA measurements. """
 
 from sys import argv
 from glob import glob
-from ROOT import TH1F, TCanvas
+from ROOT import TH1F, TH2F, TCanvas
 from RippleCounter import RippleCounter
 from BunchCrossing import BunchCrossing
 from HitMap import HitMap
@@ -65,21 +65,29 @@ if __name__ == '__main__':
     #    print bxs[idx].get_mpas()[mpa_plot].get_no_hits_shutter()[:12]
 
     # Plot counts vs x for given BX
-    no_bins = 100
-    bin_lo = -1
-    bin_hi = 601
+    no_bins_x = len(path_logs)
+    bin_lo_x = -25
+    bin_hi_x = 625
+    no_bins_y = len(bxs_plot)
+    bin_lo_y = min(bxs_plot)-.5
+    bin_hi_y = max(bxs_plot)+.5
+
     titleall = 'cts_vs_x_bxall_pxall'
-    histoall = TH1F(titleall, titleall, no_bins, bin_lo, bin_hi)
+    histoall = TH1F(titleall, titleall, no_bins_x, bin_lo_x, bin_hi_x)
     canvas = TCanvas()
 
     for px_plot in pxs_plot:
         titlepx = 'cts_vs_x_bxall_px{0}'.format(px_plot)
-        histopx = TH1F(titlepx, titlepx, no_bins, bin_lo, bin_hi)
+        histopx = TH1F(titlepx, titlepx, no_bins_x, bin_lo_x, bin_hi_x)
+
+        title2px = 'cts_vs_bx_vs_x_px{0}'.format(px_plot)
+        histo2px = TH2F(title2px, title2px, no_bins_x, bin_lo_x, bin_hi_x,
+                        no_bins_y, bin_lo_y, bin_hi_y)
 
         for bx_plot in bxs_plot:
 
             title = 'cts_vs_x_bx{0}_px{1}'.format(bx_plot, px_plot)
-            histo = TH1F(title, title, no_bins, bin_lo, bin_hi)
+            histo = TH1F(title, title, no_bins_x, bin_lo_x, bin_hi_x)
 
             for idx_log, path_log in enumerate(path_logs):
                 # Find the x position, this is mostly hardcoded for now
@@ -99,6 +107,7 @@ if __name__ == '__main__':
                                     histo.Fill(cor_x)
                                     histoall.Fill(cor_x)
                                     histopx.Fill(cor_x)
+                                    histo2px.Fill(cor_x, bxs_shutter[idx_clk])
 
             histo.Draw()
             histo.SetTitle('Occupancy for pixel {0} in BX {1}'.format(px_plot, bx_plot))
@@ -111,6 +120,13 @@ if __name__ == '__main__':
         histopx.GetXaxis().SetTitle('x position')
         histopx.GetYaxis().SetTitle('Counts')
         canvas.Print('{0}.pdf'.format(titlepx))
+
+        histo2px.Draw('COLZ')
+        histo2px.SetTitle('Occupancy for pixel {0} in all BX\'s'.format(px_plot))
+        histo2px.GetXaxis().SetTitle('x position')
+        histo2px.GetYaxis().SetTitle('BX')
+        histo2px.GetZaxis().SetTitle('assdafasf')
+        canvas.Print('{0}.pdf'.format(title2px))
 
     histoall.Draw()
     histoall.SetTitle('Occupancy for all pixels in all BX\'s')
