@@ -65,15 +65,21 @@ if __name__ == '__main__':
     #    print bxs[idx].get_mpas()[mpa_plot].get_no_hits_shutter()[:12]
 
     # Plot counts vs x for given BX
+    no_bins = 100
+    bin_lo = -1
+    bin_hi = 601
     titleall = 'cts_vs_x_bxall_pxall'
-    histoall = TH1F(titleall, titleall, 100, -1, 601)
+    histoall = TH1F(titleall, titleall, no_bins, bin_lo, bin_hi)
+    canvas = TCanvas()
 
-    for bx_plot in bxs_plot:
-        for px_plot in pxs_plot:
+    for px_plot in pxs_plot:
+        titlepx = 'cts_vs_x_bxall_px{0}'.format(px_plot)
+        histopx = TH1F(titlepx, titlepx, no_bins, bin_lo, bin_hi)
+
+        for bx_plot in bxs_plot:
 
             title = 'cts_vs_x_bx{0}_px{1}'.format(bx_plot, px_plot)
-            canvas = TCanvas()
-            histo = TH1F(title, title, 100, -1, 601)
+            histo = TH1F(title, title, no_bins, bin_lo, bin_hi)
 
             for idx_log, path_log in enumerate(path_logs):
                 # Find the x position, this is mostly hardcoded for now
@@ -92,12 +98,19 @@ if __name__ == '__main__':
                                 if hm_shutter == px_plot:
                                     histo.Fill(cor_x)
                                     histoall.Fill(cor_x)
+                                    histopx.Fill(cor_x)
 
             histo.Draw()
             histo.SetTitle('Occupancy for pixel {0} in BX {1}'.format(px_plot, bx_plot))
             histo.GetXaxis().SetTitle('x position')
             histo.GetYaxis().SetTitle('Counts')
             canvas.Print('{0}.pdf'.format(title))
+
+        histopx.Draw()
+        histopx.SetTitle('Occupancy for pixel {0} in all BX\'s'.format(px_plot))
+        histopx.GetXaxis().SetTitle('x position')
+        histopx.GetYaxis().SetTitle('Counts')
+        canvas.Print('{0}.pdf'.format(titlepx))
 
     histoall.Draw()
     histoall.SetTitle('Occupancy for all pixels in all BX\'s')
