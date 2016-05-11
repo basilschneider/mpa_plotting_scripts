@@ -4,6 +4,7 @@
 Get plots from MPA measurements. """
 
 from sys import argv
+from os import mkdir
 from glob import glob
 from ROOT import TH1F, TH2F, TCanvas
 from RippleCounter import RippleCounter
@@ -23,6 +24,7 @@ if __name__ == '__main__':
 
     hms = []
     bxs = []
+    rcs = []
     for path_log in path_logs:
         # Need timestamp from path, this method is not foolproof!
         path_timestamp = path_log[path_log.find('daqout'):].split('_')[3]
@@ -39,7 +41,6 @@ if __name__ == '__main__':
             # Convert hit maps to list of pixels with hits
             mpa.convert_hm_to_px()
 
-
         hms.append(hm)
 
         # Initialize Bunch Crossing objects
@@ -53,7 +54,14 @@ if __name__ == '__main__':
 
         bxs.append(bx)
 
-    ## Print out some information about data for debugging
+        # Initialize Ripple Counter objects
+        rc = RippleCounter()
+        rc.read_data_raw('%s/log_%s.log_counter' % (path_log, path_timestamp))
+
+        rcs.append(rc)
+
+    # Print out some information about data for debugging
+    # (limit print out to 12 elements, since it's too much information otherwise)
     #for idx, path_log in enumerate(path_logs):
     #    cor_x = int(path_log.split('_')[-1].lstrip('x')) + 600
     #    print 'Coordinate X:', cor_x
@@ -63,6 +71,8 @@ if __name__ == '__main__':
     #    print 'BXS'
     #    print len(bxs[idx].get_mpas()[mpa_plot].get_no_hits_shutter())
     #    print bxs[idx].get_mpas()[mpa_plot].get_no_hits_shutter()[:12]
+    #    print 'RCS'
+    #    print rcs[idx].get_mpas()[mpa_plot].get_no_hits()
 
     # Plot counts vs x for given BX
     no_bins_x = len(path_logs)
@@ -76,15 +86,23 @@ if __name__ == '__main__':
     histoall = TH1F(titleall, titleall, no_bins_x, bin_lo_x, bin_hi_x)
     canvas = TCanvas()
 
+    titleasyncall = 'cts_vs_x_async_bxall_pxall'
+    histoasyncall = TH1F(titleasyncall, titleasyncall, no_bins_x, bin_lo_x, bin_hi_x)
+
+    mkdir(argv[1])
+
     for px_plot in pxs_plot:
         titlepx = 'cts_vs_x_bxall_px{0}'.format(px_plot)
         histopx = TH1F(titlepx, titlepx, no_bins_x, bin_lo_x, bin_hi_x)
+
+        titleasyncpx = 'cts_vs_x_async_bxall_px{0}'.format(px_plot)
+        histoasyncpx = TH1F(titleasyncpx, titleasyncpx, no_bins_x, bin_lo_x, bin_hi_x)
 
         title2px = 'cts_vs_bx_vs_x_px{0}'.format(px_plot)
         histo2px = TH2F(title2px, title2px, no_bins_x, bin_lo_x, bin_hi_x,
                         no_bins_y, bin_lo_y, bin_hi_y)
 
-        for bx_plot in bxs_plot:
+        for idx_bx, bx_plot in enumerate(bxs_plot):
 
             title = 'cts_vs_x_bx{0}_px{1}'.format(bx_plot, px_plot)
             histo = TH1F(title, title, no_bins_x, bin_lo_x, bin_hi_x)
@@ -92,6 +110,11 @@ if __name__ == '__main__':
             for idx_log, path_log in enumerate(path_logs):
                 # Find the x position, this is mostly hardcoded for now
                 cor_x = int(path_log.split('_')[-1].lstrip('x')) + 600
+
+                # Fill async plots (independent of BX's)
+                if idx_bx == 0:
+                    histoasyncpx.Fill(cor_x, rcs[idx_log].get_mpas()[mpa_plot].get_no_hits()[px_plot])
+                    histoasyncall.Fill(cor_x, rcs[idx_log].get_mpas()[mpa_plot].get_no_hits()[px_plot])
 
                 for idx_shutter in range(0, len(bxs[idx_log].get_mpas()[mpa_plot]
                                                 .get_no_hits_shutter())):
@@ -113,26 +136,38 @@ if __name__ == '__main__':
             histo.SetTitle('Occupancy for pixel {0} in BX {1}'.format(px_plot, bx_plot))
             histo.GetXaxis().SetTitle('x position')
             histo.GetYaxis().SetTitle('Counts')
-            canvas.Print('{0}.pdf'.format(title))
+            canvas.Print('{0}/{1}.pdf'.format(argv[1], title))
 
         histopx.Draw()
         histopx.SetTitle('Occupancy for pixel {0} in all BX\'s'.format(px_plot))
         histopx.GetXaxis().SetTitle('x position')
         histopx.GetYaxis().SetTitle('Counts')
-        canvas.Print('{0}.pdf'.format(titlepx))
+        canvas.Print('{0}/{1}.pdf'.format(argv[1], titlepx))
+
+        histoasyncpx.Draw()
+        histoasyncpx.SetTitle('Occupancy for pixel {0} (async readout)'.format(px_plot))
+        histoasyncpx.GetXaxis().SetTitle('x position')
+        histoasyncpx.GetYaxis().SetTitle('Counts')
+        canvas.Print('{0}/{1}.pdf'.format(argv[1], titleasyncpx))
 
         histo2px.Draw('COLZ')
         histo2px.SetTitle('Occupancy for pixel {0} in all BX\'s'.format(px_plot))
         histo2px.GetXaxis().SetTitle('x position')
         histo2px.GetYaxis().SetTitle('BX')
         histo2px.GetZaxis().SetTitle('assdafasf')
-        canvas.Print('{0}.pdf'.format(title2px))
+        canvas.Print('{0}/{1}.pdf'.format(argv[1], title2px))
 
     histoall.Draw()
     histoall.SetTitle('Occupancy for all pixels in all BX\'s')
     histoall.GetXaxis().SetTitle('x position')
     histoall.GetYaxis().SetTitle('Counts')
-    canvas.Print('{0}.pdf'.format(titleall))
+    canvas.Print('{0}/{1}.pdf'.format(argv[1], titleall))
+
+    histoasyncall.Draw()
+    histoasyncall.SetTitle('Occupancy for all pixels (async readout)')
+    histoasyncall.GetXaxis().SetTitle('x position')
+    histoasyncall.GetYaxis().SetTitle('Counts')
+    canvas.Print('{0}/{1}.pdf'.format(argv[1], titleasyncall))
 
     ## Get the path to the logs
     #path_logs = argv[1]

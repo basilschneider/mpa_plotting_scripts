@@ -41,7 +41,7 @@ if __name__ == '__main__':
     hm.read_data_raw('%s/log_%s.log_memory_data' % (path_logs, path_timestamp))
 
     # Plot hit maps
-    #hm.plot_maps('%s/plots/hit_maps/' % path_logs)
+    hm.plot_maps('%s/plots/hit_maps/' % path_logs)
 
     sd = SynchronousData(bx, hm)
 
