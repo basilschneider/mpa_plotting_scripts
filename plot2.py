@@ -6,7 +6,7 @@ Get plots from MPA measurements. """
 from sys import argv
 from os import mkdir
 from glob import glob
-from ROOT import TH1F, TH2F, TCanvas
+from ROOT import TH1F, TH2F, TCanvas, TLegend
 from RippleCounter import RippleCounter
 from BunchCrossing import BunchCrossing
 from HitMap import HitMap
@@ -15,8 +15,8 @@ from SynchronousData import SynchronousData
 if __name__ == '__main__':
 
     mpa_plot = 4
-    pxs_plot = [27, 28]
-    bxs_plot = [7, 8, 9, 10]
+    pxs_plot = [22, 23]
+    bxs_plot = [8, 9, 10, 11]
 
     # Get the path's to the logs
     glob_logs = argv[1]
@@ -76,11 +76,12 @@ if __name__ == '__main__':
 
     # Plot counts vs x for given BX
     no_bins_x = len(path_logs)
-    bin_lo_x = -25
-    bin_hi_x = 625
+    bin_lo_x = -50
+    bin_hi_x = 2950
     no_bins_y = len(bxs_plot)
     bin_lo_y = min(bxs_plot)-.5
     bin_hi_y = max(bxs_plot)+.5
+    n = 1000.
 
     titleall = 'cts_vs_x_bxall_pxall'
     histoall = TH1F(titleall, titleall, no_bins_x, bin_lo_x, bin_hi_x)
@@ -89,14 +90,24 @@ if __name__ == '__main__':
     titleasyncall = 'cts_vs_x_async_bxall_pxall'
     histoasyncall = TH1F(titleasyncall, titleasyncall, no_bins_x, bin_lo_x, bin_hi_x)
 
+    l_effs_bx = []
+    l_effs = []
+    l_effa = []
+
     mkdir(argv[1])
 
     for px_plot in pxs_plot:
         titlepx = 'cts_vs_x_bxall_px{0}'.format(px_plot)
         histopx = TH1F(titlepx, titlepx, no_bins_x, bin_lo_x, bin_hi_x)
 
+        titlepxeff = 'effs_vs_x_bxall_px{0}'.format(px_plot)
+        histopxeff = TH1F(titlepxeff, titlepxeff, no_bins_x, bin_lo_x, bin_hi_x)
+
         titleasyncpx = 'cts_vs_x_async_bxall_px{0}'.format(px_plot)
         histoasyncpx = TH1F(titleasyncpx, titleasyncpx, no_bins_x, bin_lo_x, bin_hi_x)
+
+        titleasyncpxeff = 'effs_px{0}'.format(px_plot)
+        histoasyncpxeff = TH1F(titleasyncpxeff, titleasyncpxeff, no_bins_x, bin_lo_x, bin_hi_x)
 
         title2px = 'cts_vs_bx_vs_x_px{0}'.format(px_plot)
         histo2px = TH2F(title2px, title2px, no_bins_x, bin_lo_x, bin_hi_x,
@@ -107,14 +118,22 @@ if __name__ == '__main__':
             title = 'cts_vs_x_bx{0}_px{1}'.format(bx_plot, px_plot)
             histo = TH1F(title, title, no_bins_x, bin_lo_x, bin_hi_x)
 
+            titleeff = 'effs_vs_x_bx{0}_px{1}'.format(bx_plot, px_plot)
+            histoeff = TH1F(titleeff, titleeff, no_bins_x, bin_lo_x, bin_hi_x)
+
             for idx_log, path_log in enumerate(path_logs):
-                # Find the x position, this is mostly hardcoded for now
-                cor_x = int(path_log.split('_')[-1].lstrip('x')) + 600
+                # Find the x position, this is hardcoded for now
+                #cor_x = int(path_log.split('_')[-1].lstrip('x')) + 600
+                cor_x = int(path_log.split('X')[1].split('_')[0]) - 917000
 
                 # Fill async plots (independent of BX's)
                 if idx_bx == 0:
-                    histoasyncpx.Fill(cor_x, rcs[idx_log].get_mpas()[mpa_plot].get_no_hits()[px_plot])
-                    histoasyncall.Fill(cor_x, rcs[idx_log].get_mpas()[mpa_plot].get_no_hits()[px_plot])
+                    histoasyncpx.Fill(cor_x, rcs[idx_log].get_mpas()[mpa_plot]
+                                      .get_no_hits()[px_plot])
+                    histoasyncall.Fill(cor_x, rcs[idx_log].get_mpas()[mpa_plot]
+                                       .get_no_hits()[px_plot])
+                    histoasyncpxeff.Fill(cor_x, (rcs[idx_log].get_mpas()[mpa_plot]
+                                         .get_no_hits()[px_plot])/n)
 
                 for idx_shutter in range(0, len(bxs[idx_log].get_mpas()[mpa_plot]
                                                 .get_no_hits_shutter())):
@@ -128,28 +147,40 @@ if __name__ == '__main__':
                             for hm_shutter in hms_shutter[idx_clk]:
                                 if hm_shutter == px_plot:
                                     histo.Fill(cor_x)
+                                    histoeff.Fill(cor_x, 1./n)
                                     histoall.Fill(cor_x)
                                     histopx.Fill(cor_x)
+                                    histopxeff.Fill(cor_x, 1./n)
                                     histo2px.Fill(cor_x, bxs_shutter[idx_clk])
 
+            canvas.cd()
             histo.Draw()
             histo.SetTitle('Occupancy for pixel {0} in BX {1}'.format(px_plot, bx_plot))
             histo.GetXaxis().SetTitle('x position')
             histo.GetYaxis().SetTitle('Counts')
             canvas.Print('{0}/{1}.pdf'.format(argv[1], title))
 
+            l_effs_bx.append(histoeff)
+
+        canvas.cd()
         histopx.Draw()
         histopx.SetTitle('Occupancy for pixel {0} in all BX\'s'.format(px_plot))
         histopx.GetXaxis().SetTitle('x position')
         histopx.GetYaxis().SetTitle('Counts')
         canvas.Print('{0}/{1}.pdf'.format(argv[1], titlepx))
 
+        l_effs.append(histopxeff)
+
+        canvas.cd()
         histoasyncpx.Draw()
         histoasyncpx.SetTitle('Occupancy for pixel {0} (async readout)'.format(px_plot))
         histoasyncpx.GetXaxis().SetTitle('x position')
         histoasyncpx.GetYaxis().SetTitle('Counts')
         canvas.Print('{0}/{1}.pdf'.format(argv[1], titleasyncpx))
 
+        l_effa.append(histoasyncpxeff)
+
+        canvas.cd()
         histo2px.Draw('COLZ')
         histo2px.SetTitle('Occupancy for pixel {0} in all BX\'s'.format(px_plot))
         histo2px.GetXaxis().SetTitle('x position')
@@ -157,51 +188,149 @@ if __name__ == '__main__':
         histo2px.GetZaxis().SetTitle('assdafasf')
         canvas.Print('{0}/{1}.pdf'.format(argv[1], title2px))
 
+    canvas.cd()
     histoall.Draw()
     histoall.SetTitle('Occupancy for all pixels in all BX\'s')
     histoall.GetXaxis().SetTitle('x position')
     histoall.GetYaxis().SetTitle('Counts')
     canvas.Print('{0}/{1}.pdf'.format(argv[1], titleall))
 
+    canvas.cd()
     histoasyncall.Draw()
     histoasyncall.SetTitle('Occupancy for all pixels (async readout)')
     histoasyncall.GetXaxis().SetTitle('x position')
     histoasyncall.GetYaxis().SetTitle('Counts')
     canvas.Print('{0}/{1}.pdf'.format(argv[1], titleasyncall))
 
-    ## Get the path to the logs
-    #path_logs = argv[1]
-    ## Need timestamp from path, this method is not foolproof!
-    #path_timestamp = path_logs[path_logs.find('daqout'):].split('_')[3]
+    # Plot synchronous efficiencies (per bx)
+    leg = TLegend(.9, .5, 1., .9)
+    for idx, histo in enumerate(l_effs_bx):
 
-    #rc = RippleCounter()
+        # Don't plot empty histograms
+        if histo.Integral() == 0:
+            continue
 
-    ## Read in data from raw log file and store it in MPA object
-    #rc.read_data_raw('%s/log_%s.log_counter' % (path_logs, path_timestamp))
+        # Styles and colors
+        histo.SetLineColor(idx+2)
+        if 'px23' in histo.GetName():
+            histo.SetLineStyle(6)
 
-    ## Plot ripples vs. shutter
-    #rc.plot_ripples_shutter('%s/plots/ripples_per_shutter/' % path_logs)
+        if idx == 0:
+            same = ''
+            histo.SetTitle('#epsilon_{s} = #hits_{sync}/n')
+            histo.GetXaxis().SetTitle('x position')
+            histo.GetYaxis().SetTitle('Counts')
+        else:
+            same = 'SAME'
 
-    ## Plot 2d maps
-    #rc.plot_maps('%s/plots/ripples_maps/' % path_logs)
+        histo.Draw(same)
+        title = ' '.join(histo.GetName().split('_')[-2:])
+        leg.AddEntry(histo, title, 'l')
 
-    #bx = BunchCrossing()
+    leg.Draw()
+    canvas.Print('{0}/{1}.pdf'.format(argv[1], 'effs_vs_x_bx_lin'))
 
-    ## Read in data from raw log file and store it in MPA object
-    #bx.read_data_raw('%s/log_%s.log_memory_bx' % (path_logs, path_timestamp))
+    canvas.SetLogy()
+    canvas.Print('{0}/{1}.pdf'.format(argv[1], 'effs_vs_x_bx_log'))
+    canvas.SetLogy(0)
 
-    ## Plot counts vs. bunch crossing
-    #bx.plot_cts_bx('%s/plots/counts_per_bx/' % path_logs)
+    # Plot synchronous efficiencies (all bx)
+    leg = TLegend(.9, .5, 1., .9)
+    for idx, histo in enumerate(l_effs):
 
-    #hm = HitMap()
+        # Don't plot empty histograms
+        if histo.Integral() == 0:
+            continue
 
-    ## Read in data from raw log file and store it in MPA object
-    #hm.read_data_raw('%s/log_%s.log_memory_data' % (path_logs, path_timestamp))
+        # Styles and colors
+        histo.SetLineColor(idx+2)
+        if 'px23' in histo.GetName():
+            histo.SetLineStyle(6)
 
-    ## Plot hit maps
-    ##hm.plot_maps('%s/plots/hit_maps/' % path_logs)
+        if idx == 0:
+            same = ''
+            histo.SetTitle('#epsilon_{s} = #hits_{sync}/n')
+            histo.GetXaxis().SetTitle('x position')
+            histo.GetYaxis().SetTitle('Counts')
+        else:
+            same = 'SAME'
 
-    #sd = SynchronousData(bx, hm)
+        histo.Draw(same)
+        title = ' '.join(histo.GetName().split('_')[-1:])
+        leg.AddEntry(histo, title, 'l')
 
-    ## Plot counts vs. bunch crossing separate for each pixel
-    #sd.plot_cts_bx_px('%s/plots/counts_per_px_bx' % path_logs)
+    leg.Draw()
+    canvas.Print('{0}/{1}.pdf'.format(argv[1], 'effs_vs_x_lin'))
+
+    canvas.SetLogy()
+    canvas.Print('{0}/{1}.pdf'.format(argv[1], 'effs_vs_x_log'))
+    canvas.SetLogy(0)
+
+    # Plot asynchronous efficiencies
+    leg = TLegend(.9, .5, 1., .9)
+    for idx, histo in enumerate(l_effa):
+
+        # Don't plot empty histograms
+        if histo.Integral() == 0:
+            continue
+
+        # Styles and colors
+        histo.SetLineColor(idx+2)
+        if 'px23' in histo.GetName():
+            histo.SetLineStyle(6)
+
+        if idx == 0:
+            same = ''
+            histo.SetTitle('#epsilon_{a} = #hits_{async}/n')
+            histo.GetXaxis().SetTitle('x position')
+            histo.GetYaxis().SetTitle('Counts')
+        else:
+            same = 'SAME'
+
+        histo.Draw(same)
+        title = ' '.join(histo.GetName().split('_')[-1:])
+        leg.AddEntry(histo, title, 'l')
+
+    leg.Draw()
+    canvas.Print('{0}/{1}.pdf'.format(argv[1], 'effa_vs_x_lin'))
+
+    canvas.SetLogy()
+    canvas.Print('{0}/{1}.pdf'.format(argv[1], 'effa_vs_x_log'))
+    canvas.SetLogy(0)
+
+    # Divide efficiencies sync by async
+    leg = TLegend(.9, .5, 1., .9)
+    for idx in range(0, len(l_effs)):
+
+        histo_sync = l_effs[idx]
+        histo_async = l_effa[idx]
+
+        # Don't plot empty histograms
+        if histo_sync.Integral() == 0 and histo_async.Integral() == 0:
+            continue
+
+        histo_sync.Divide(histo_async)
+
+        # Styles and colors
+        histo_sync.SetLineColor(idx+2)
+        if 'px23' in histo_sync.GetName():
+            histo_sync.SetLineStyle(6)
+
+        if idx == 0:
+            same = ''
+            histo_sync.SetTitle('#epsilon_{s}/#epsilon_{a}')
+            histo_sync.GetXaxis().SetTitle('x position')
+            histo_sync.GetYaxis().SetTitle('Counts')
+        else:
+            same = 'SAME'
+
+        histo_sync.Draw(same)
+        title = ' '.join(histo_sync.GetName().split('_')[-1:])
+        leg.AddEntry(histo_sync, title, 'l')
+
+    leg.Draw()
+    canvas.Print('{0}/{1}.pdf'.format(argv[1], 'effs_effa_lin'))
+
+    canvas.SetLogy()
+    canvas.Print('{0}/{1}.pdf'.format(argv[1], 'effs_effa_log'))
+    canvas.SetLogy(0)
