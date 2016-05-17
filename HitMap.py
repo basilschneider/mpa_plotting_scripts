@@ -74,11 +74,11 @@ class HitMap(Plotter):
             maps.append(map_mpa)
             self._save_histo(map_mpa,
                              '%s/%s.pdf' % (path, name % (idx_mpa)),
-                             draw_option='COLZ')
+                             draw_option='COLZ|TEXT90')
 
         self._save_histo(map_merged,
                          '%s/%s.pdf' % (path, name % ('merged')),
-                         draw_option='COLZ')
+                         draw_option='COLZ|TEXT90')
 
         self._plot_map_all(maps, path, name, z_max)
 
