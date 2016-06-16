@@ -274,7 +274,8 @@ if __name__ == '__main__':
                 histo.SetTitle('#epsilon_{s} = #hits_{sync}/n')
                 histo.GetXaxis().SetTitle('x [#mum]')
                 histo.GetYaxis().SetTitle('Counts')
-                histo.SetMaximum(1.05)
+                histo.SetMaximum(2.)
+                histo.SetMinimum(.0005)
             else:
                 same = 'SAME'
 
@@ -379,7 +380,7 @@ if __name__ == '__main__':
     histoeff2d22.SetTitle('#epsilon_{s}')
     histoeff2d22.GetXaxis().SetTitle('x [#mum]')
     histoeff2d22.GetYaxis().SetTitle('delay [ns]')
-    canvas.Print('{0}.pdf'.format(titleeff2d22))
+    #canvas.Print('{0}.pdf'.format(titleeff2d22))
     canvas.Clear()
 
     canvas.cd()
@@ -387,6 +388,6 @@ if __name__ == '__main__':
     histoeff2d23.SetTitle('#epsilon_{s}')
     histoeff2d23.GetXaxis().SetTitle('x [#mum]')
     histoeff2d23.GetYaxis().SetTitle('delay [ns]')
-    canvas.Print('{0}.pdf'.format(titleeff2d23))
+    #canvas.Print('{0}.pdf'.format(titleeff2d23))
     canvas.Clear()
 
