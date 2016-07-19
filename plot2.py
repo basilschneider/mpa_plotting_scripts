@@ -46,9 +46,10 @@ if __name__ == '__main__':
     no_bins_y_eff = 13
     bin_lo_y_eff = -2
     bin_hi_y_eff = 50
-    n = 1000.
+    n = 1000
     canvas = TCanvas()
 
+    n = float(n)
     titleeff2d22 = 'effs_2d_px22'
     histoeff2d22 = TH2F(titleeff2d22, titleeff2d22,
                       no_bins_x, bin_lo_x, bin_hi_x,
